@@ -1,0 +1,258 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+             #loadingBar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width: 100%;
+                 height: 600px;
+                 background-color:rgba(200,200,200,0.8);
+                 -webkit-transition: all 0.5s ease;
+                 -moz-transition: all 0.5s ease;
+                 -ms-transition: all 0.5s ease;
+                 -o-transition: all 0.5s ease;
+                 transition: all 0.5s ease;
+                 opacity:1;
+             }
+
+             #bar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width:20px;
+                 height:20px;
+                 margin:auto auto auto auto;
+                 border-radius:11px;
+                 border:2px solid rgba(30,30,30,0.05);
+                 background: rgb(0, 173, 246); /* Old browsers */
+                 box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+             }
+
+             #border {
+                 position:absolute;
+                 top:10px;
+                 left:10px;
+                 width:500px;
+                 height:23px;
+                 margin:auto auto auto auto;
+                 box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+                 border-radius:10px;
+             }
+
+             #text {
+                 position:absolute;
+                 top:8px;
+                 left:530px;
+                 width:30px;
+                 height:50px;
+                 margin:auto auto auto auto;
+                 font-size:22px;
+                 color: #000000;
+             }
+
+             div.outerBorder {
+                 position:relative;
+                 top:400px;
+                 width:600px;
+                 height:44px;
+                 margin:auto auto auto auto;
+                 border:8px solid rgba(0,0,0,0.1);
+                 background: rgb(252,252,252); /* Old browsers */
+                 background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+                 background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+                 background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+                 background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+                 background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+                 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+                 border-radius:72px;
+                 box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+             }
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%;height:95%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+            <div id="loadingBar">
+              <div class="outerBorder">
+                <div id="text">0%</div>
+                <div id="border">
+                  <div id="bar"></div>
+                </div>
+              </div>
+            </div>
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#AFD3E2", "id": "start", "label": "start", "shape": "dot"}, {"color": "#146C94", "id": "comment", "label": "comment", "shape": "dot"}, {"color": "#19A7CE", "id": ".", "label": ".", "shape": "dot"}, {"color": "#19A7CE", "id": ".t", "label": ".t", "shape": "dot"}, {"color": "#19A7CE", "id": ".tr", "label": ".tr", "shape": "dot"}, {"color": "#19A7CE", "id": ".tru", "label": ".tru", "shape": "dot"}, {"color": "#19A7CE", "id": ".true", "label": ".true", "shape": "dot"}, {"color": "#146C94", "id": ".true.\n.false.", "label": ".true.\n.false.", "shape": "dot"}, {"color": "#19A7CE", "id": ".f", "label": ".f", "shape": "dot"}, {"color": "#19A7CE", "id": ".fa", "label": ".fa", "shape": "dot"}, {"color": "#19A7CE", "id": ".fal", "label": ".fal", "shape": "dot"}, {"color": "#19A7CE", "id": ".fals", "label": ".fals", "shape": "dot"}, {"color": "#19A7CE", "id": ".false", "label": ".false", "shape": "dot"}, {"color": "#19A7CE", "id": "\u0027\n\"", "label": "\u0027\n\"", "shape": "dot"}, {"color": "#19A7CE", "id": "enteringChar", "label": "enteringChar", "shape": "dot"}, {"color": "#146C94", "id": "character\nvalue", "label": "character\nvalue", "shape": "dot"}, {"color": "#19A7CE", "id": "identifierStart", "label": "identifierStart", "shape": "dot"}, {"color": "#146C94", "id": "identifier", "label": "identifier", "shape": "dot"}, {"color": "#146C94", "id": "identifier2", "label": "identifier2", "shape": "dot"}, {"color": "#146C94", "id": "identifier3", "label": "identifier3", "shape": "dot"}, {"color": "#146C94", "id": "identifier4", "label": "identifier4", "shape": "dot"}, {"color": "#146C94", "id": "identifier5", "label": "identifier5", "shape": "dot"}, {"color": "#146C94", "id": "identifier6", "label": "identifier6", "shape": "dot"}, {"color": "#146C94", "id": "identifier7", "label": "identifier7", "shape": "dot"}, {"color": "#146C94", "id": "identifier8", "label": "identifier8", "shape": "dot"}, {"color": "#146C94", "id": "identifier9", "label": "identifier9", "shape": "dot"}, {"color": "#146C94", "id": "identifier10", "label": "identifier10", "shape": "dot"}, {"color": "#146C94", "id": "identifier12", "label": "identifier12", "shape": "dot"}, {"color": "#146C94", "id": "+\n-", "label": "+\n-", "shape": "dot"}, {"color": "#146C94", "id": "Int\nValue", "label": "Int\nValue", "shape": "dot"}, {"color": "#146C94", "id": "Real\nValue", "label": "Real\nValue", "shape": "dot"}, {"color": "#19A7CE", "id": "+.\n-.", "label": "+.\n-.", "shape": "dot"}, {"color": "#19A7CE", "id": "i", "label": "i", "shape": "dot"}, {"color": "#146C94", "id": "if", "label": "if", "shape": "dot"}, {"color": "#19A7CE", "id": "im", "label": "im", "shape": "dot"}, {"color": "#19A7CE", "id": "imp", "label": "imp", "shape": "dot"}, {"color": "#19A7CE", "id": "impl", "label": "impl", "shape": "dot"}, {"color": "#19A7CE", "id": "impli", "label": "impli", "shape": "dot"}, {"color": "#19A7CE", "id": "implic", "label": "implic", "shape": "dot"}, {"color": "#19A7CE", "id": "implici", "label": "implici", "shape": "dot"}, {"color": "#146C94", "id": "implicit", "label": "implicit", "shape": "dot"}, {"color": "#19A7CE", "id": "in", "label": "in", "shape": "dot"}, {"color": "#19A7CE", "id": "int", "label": "int", "shape": "dot"}, {"color": "#19A7CE", "id": "inte", "label": "inte", "shape": "dot"}, {"color": "#19A7CE", "id": "integ", "label": "integ", "shape": "dot"}, {"color": "#19A7CE", "id": "intege", "label": "intege", "shape": "dot"}, {"color": "#146C94", "id": "integer", "label": "integer", "shape": "dot"}, {"color": "#19A7CE", "id": "p", "label": "p", "shape": "dot"}, {"color": "#19A7CE", "id": "pr", "label": "pr", "shape": "dot"}, {"color": "#19A7CE", "id": "pro", "label": "pro", "shape": "dot"}, {"color": "#19A7CE", "id": "prog", "label": "prog", "shape": "dot"}, {"color": "#19A7CE", "id": "progr", "label": "progr", "shape": "dot"}, {"color": "#19A7CE", "id": "progra", "label": "progra", "shape": "dot"}, {"color": "#146C94", "id": "program", "label": "program", "shape": "dot"}, {"color": "#19A7CE", "id": "pa", "label": "pa", "shape": "dot"}, {"color": "#19A7CE", "id": "par", "label": "par", "shape": "dot"}, {"color": "#19A7CE", "id": "para", "label": "para", "shape": "dot"}, {"color": "#19A7CE", "id": "param", "label": "param", "shape": "dot"}, {"color": "#19A7CE", "id": "parame", "label": "parame", "shape": "dot"}, {"color": "#19A7CE", "id": "paramet", "label": "paramet", "shape": "dot"}, {"color": "#19A7CE", "id": "paramete", "label": "paramete", "shape": "dot"}, {"color": "#146C94", "id": "parameter", "label": "parameter", "shape": "dot"}, {"color": "#19A7CE", "id": "pri", "label": "pri", "shape": "dot"}, {"color": "#19A7CE", "id": "prin", "label": "prin", "shape": "dot"}, {"color": "#146C94", "id": "print", "label": "print", "shape": "dot"}, {"color": "#19A7CE", "id": "n", "label": "n", "shape": "dot"}, {"color": "#19A7CE", "id": "no", "label": "no", "shape": "dot"}, {"color": "#19A7CE", "id": "non", "label": "non", "shape": "dot"}, {"color": "#146C94", "id": "none", "label": "none", "shape": "dot"}, {"color": "#19A7CE", "id": "e", "label": "e", "shape": "dot"}, {"color": "#19A7CE", "id": "el", "label": "el", "shape": "dot"}, {"color": "#19A7CE", "id": "els", "label": "els", "shape": "dot"}, {"color": "#146C94", "id": "else", "label": "else", "shape": "dot"}, {"color": "#19A7CE", "id": "en", "label": "en", "shape": "dot"}, {"color": "#146C94", "id": "end", "label": "end", "shape": "dot"}, {"color": "#19A7CE", "id": "r", "label": "r", "shape": "dot"}, {"color": "#19A7CE", "id": "re", "label": "re", "shape": "dot"}, {"color": "#19A7CE", "id": "rea", "label": "rea", "shape": "dot"}, {"color": "#146C94", "id": "read", "label": "read", "shape": "dot"}, {"color": "#146C94", "id": "real", "label": "real", "shape": "dot"}, {"color": "#19A7CE", "id": "c", "label": "c", "shape": "dot"}, {"color": "#19A7CE", "id": "co", "label": "co", "shape": "dot"}, {"color": "#19A7CE", "id": "com", "label": "com", "shape": "dot"}, {"color": "#19A7CE", "id": "comp", "label": "comp", "shape": "dot"}, {"color": "#19A7CE", "id": "compl", "label": "compl", "shape": "dot"}, {"color": "#19A7CE", "id": "comple", "label": "comple", "shape": "dot"}, {"color": "#146C94", "id": "complex", "label": "complex", "shape": "dot"}, {"color": "#19A7CE", "id": "ch", "label": "ch", "shape": "dot"}, {"color": "#19A7CE", "id": "cha", "label": "cha", "shape": "dot"}, {"color": "#19A7CE", "id": "char", "label": "char", "shape": "dot"}, {"color": "#19A7CE", "id": "chara", "label": "chara", "shape": "dot"}, {"color": "#19A7CE", "id": "charac", "label": "charac", "shape": "dot"}, {"color": "#19A7CE", "id": "charact", "label": "charact", "shape": "dot"}, {"color": "#19A7CE", "id": "characte", "label": "characte", "shape": "dot"}, {"color": "#146C94", "id": "character", "label": "character", "shape": "dot"}, {"color": "#19A7CE", "id": "l", "label": "l", "shape": "dot"}, {"color": "#19A7CE", "id": "lo", "label": "lo", "shape": "dot"}, {"color": "#19A7CE", "id": "log", "label": "log", "shape": "dot"}, {"color": "#19A7CE", "id": "logi", "label": "logi", "shape": "dot"}, {"color": "#19A7CE", "id": "logic", "label": "logic", "shape": "dot"}, {"color": "#19A7CE", "id": "logica", "label": "logica", "shape": "dot"}, {"color": "#146C94", "id": "logical", "label": "logical", "shape": "dot"}, {"color": "#19A7CE", "id": "t", "label": "t", "shape": "dot"}, {"color": "#19A7CE", "id": "th", "label": "th", "shape": "dot"}, {"color": "#19A7CE", "id": "the", "label": "the", "shape": "dot"}, {"color": "#146C94", "id": "then", "label": "then", "shape": "dot"}, {"color": "#19A7CE", "id": "d", "label": "d", "shape": "dot"}, {"color": "#146C94", "id": "do", "label": "do", "shape": "dot"}, {"color": "#19A7CE", "id": "v", "label": "v", "shape": "dot"}, {"color": "#19A7CE", "id": "va", "label": "va", "shape": "dot"}, {"color": "#146C94", "id": "var", "label": "var", "shape": "dot"}, {"color": "#146C94", "id": "=", "label": "=", "shape": "dot"}, {"color": "#146C94", "id": "==", "label": "==", "shape": "dot"}, {"color": "#146C94", "id": "/", "label": "/", "shape": "dot"}, {"color": "#146C94", "id": "/=", "label": "/=", "shape": "dot"}, {"color": "#146C94", "id": "\u003e\n\u003c", "label": "\u003e\n\u003c", "shape": "dot"}, {"color": "#146C94", "id": "\u003e=\n\u003c=", "label": "\u003e=\n\u003c=", "shape": "dot"}, {"color": "#146C94", "id": "*\t,\n(\t)", "label": "*\t,\n(\t)", "shape": "dot"}, {"color": "#19A7CE", "id": ":", "label": ":", "shape": "dot"}, {"color": "#146C94", "id": "::", "label": "::", "shape": "dot"}, {"color": "#a70000", "id": "Dead\nState1", "label": "Dead\nState1", "shape": "dot"}, {"color": "#a70000", "id": "Dead\nState2", "label": "Dead\nState2", "shape": "dot"}, {"color": "#a70000", "id": "Dead\nState3", "label": "Dead\nState3", "shape": "dot"}, {"color": "#a70000", "id": "Dead\nState4", "label": "Dead\nState4", "shape": "dot"}, {"color": "#a70000", "id": "Dead\nState5", "label": "Dead\nState5", "shape": "dot"}, {"color": "#a70000", "id": "Dead\nState6", "label": "Dead\nState6", "shape": "dot"}, {"color": "#a70000", "id": "Dead\nState7", "label": "Dead\nState7", "shape": "dot"}, {"color": "#a70000", "id": "Dead\nState8", "label": "Dead\nState8", "shape": "dot"}, {"color": "#a70000", "id": "Dead\nState9", "label": "Dead\nState9", "shape": "dot"}, {"color": "#a70000", "id": "Dead\nState10", "label": "Dead\nState10", "shape": "dot"}, {"color": "#a70000", "id": "Dead\nState11", "label": "Dead\nState11", "shape": "dot"}, {"color": "#a70000", "id": "Dead\nState12", "label": "Dead\nState12", "shape": "dot"}, {"color": "#a70000", "id": "Dead\nState13", "label": "Dead\nState13", "shape": "dot"}, {"color": "#a70000", "id": "Dead\nState14", "label": "Dead\nState14", "shape": "dot"}, {"color": "#a70000", "id": "Dead\nState15", "label": "Dead\nState15", "shape": "dot"}, {"color": "#a70000", "id": "Dead\nState16", "label": "Dead\nState16", "shape": "dot"}, {"color": "#a70000", "id": "Dead\nState18", "label": "Dead\nState18", "shape": "dot"}, {"color": "#a70000", "id": "Dead\nState19", "label": "Dead\nState19", "shape": "dot"}, {"color": "#a70000", "id": "Dead\nState20", "label": "Dead\nState20", "shape": "dot"}, {"color": "#a70000", "id": "Dead\nState22", "label": "Dead\nState22", "shape": "dot"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "start", "label": "\u2757", "to": "comment"}, {"arrows": "to", "from": "comment", "label": "\u26ab", "to": "comment"}, {"arrows": "to", "from": "start", "label": ".", "to": "."}, {"arrows": "to", "from": ".", "label": "t\nT", "to": ".t"}, {"arrows": "to", "from": ".t", "label": "r\nR", "to": ".tr"}, {"arrows": "to", "from": ".tr", "label": "u\nU", "to": ".tru"}, {"arrows": "to", "from": ".tru", "label": "e\nE", "to": ".true"}, {"arrows": "to", "from": ".true", "label": ".", "to": ".true.\n.false."}, {"arrows": "to", "from": ".", "label": "f\nF", "to": ".f"}, {"arrows": "to", "from": ".f", "label": "a\nA", "to": ".fa"}, {"arrows": "to", "from": ".fa", "label": "l\nL", "to": ".fal"}, {"arrows": "to", "from": ".fal", "label": "s\nS", "to": ".fals"}, {"arrows": "to", "from": ".fals", "label": "e\nE", "to": ".false"}, {"arrows": "to", "from": ".false", "label": ".", "to": ".true.\n.false."}, {"arrows": "to", "from": ".", "label": "[^tTfF\\d]", "to": "Dead\nState1"}, {"arrows": "to", "from": ".t", "label": "[^rR]", "to": "Dead\nState1"}, {"arrows": "to", "from": ".tr", "label": "[^uU]", "to": "Dead\nState1"}, {"arrows": "to", "from": ".tru", "label": "[^eE]", "to": "Dead\nState1"}, {"arrows": "to", "from": ".true", "label": "[^.]", "to": "Dead\nState1"}, {"arrows": "to", "from": ".f", "label": "[^aA]", "to": "Dead\nState1"}, {"arrows": "to", "from": ".fa", "label": "[^lL]", "to": "Dead\nState1"}, {"arrows": "to", "from": ".fal", "label": "[^sS]", "to": "Dead\nState1"}, {"arrows": "to", "from": ".fals", "label": "[^eE]", "to": "Dead\nState1"}, {"arrows": "to", "from": ".false", "label": "[^.]", "to": "Dead\nState1"}, {"arrows": "to", "from": ".true.\n.false.", "label": "\u26ab", "to": "Dead\nState1"}, {"arrows": "to", "from": "Dead\nState1", "label": "\u26ab", "to": "Dead\nState1"}, {"arrows": "to", "from": "start", "label": "\u0027\n\"", "to": "\u0027\n\""}, {"arrows": "to", "from": "\u0027\n\"", "label": "[^\u0027\"]", "to": "enteringChar"}, {"arrows": "to", "from": "enteringChar", "label": "[^\u0027\"]", "to": "enteringChar"}, {"arrows": "to", "from": "enteringChar", "label": "\u0027\n\"", "to": "character\nvalue"}, {"arrows": "to", "from": "character\nvalue", "label": "\u26ab", "to": "Dead\nState20"}, {"arrows": "to", "from": "\u0027\n\"", "label": "\u0027\n\"", "to": "character\nvalue"}, {"arrows": "to", "from": "Dead\nState20", "label": "\u26ab", "to": "Dead\nState20"}, {"arrows": "to", "from": "start", "label": "[abf-hjkmoqsuw-zABF-HJKMOQSUW-Z]", "to": "identifierStart"}, {"arrows": "to", "from": "identifierStart", "label": "[\\w_]", "to": "identifier"}, {"arrows": "to", "from": "identifier", "label": "[\\w_]", "to": "identifier"}, {"arrows": "to", "from": "identifierStart", "label": "[^\\w_]", "to": "Dead\nState15"}, {"arrows": "to", "from": "identifier", "label": "[^\\w_]", "to": "Dead\nState15"}, {"arrows": "to", "from": "Dead\nState15", "label": "\u26ab", "to": "Dead\nState15"}, {"arrows": "to", "from": "start", "label": "\\d", "to": "Int\nValue"}, {"arrows": "to", "from": "start", "label": "+\n-", "to": "+\n-"}, {"arrows": "to", "from": "+\n-", "label": "\\d", "to": "Int\nValue"}, {"arrows": "to", "from": "Int\nValue", "label": "\\d", "to": "Int\nValue"}, {"arrows": "to", "from": "Dead\nState2", "label": "\u26ab", "to": "Dead\nState2"}, {"arrows": "to", "from": "Int\nValue", "label": "[^\\d.]", "to": "Dead\nState2"}, {"arrows": "to", "from": "+\n-", "label": "[^.\\d]", "to": "Dead\nState2"}, {"arrows": "to", "from": ".", "label": "\\d", "to": "Real\nValue"}, {"arrows": "to", "from": "Real\nValue", "label": "\\d", "to": "Real\nValue"}, {"arrows": "to", "from": "Real\nValue", "label": "[^\\d]", "to": "Dead\nState2"}, {"arrows": "to", "from": "+\n-", "label": ".", "to": "+.\n-."}, {"arrows": "to", "from": "+.\n-.", "label": "\\d", "to": "Real\nValue"}, {"arrows": "to", "from": "+.\n-.", "label": "[^\\d]", "to": "Dead\nState2"}, {"arrows": "to", "from": "start", "label": "i\nI", "to": "i"}, {"arrows": "to", "from": "i", "label": "f\nF", "to": "if"}, {"arrows": "to", "from": "i", "label": "[^\\d_]", "to": "Dead\nState19"}, {"arrows": "to", "from": "if", "label": "[^\\d_]", "to": "Dead\nState19"}, {"arrows": "to", "from": "Dead\nState19", "label": "\u26ab", "to": "Dead\nState19"}, {"arrows": "to", "from": "i", "label": "[a-eg-lo-zA-EG-LOZ0-9_]", "to": "identifier6"}, {"arrows": "to", "from": "if", "label": "[\\d_]", "to": "identifier6"}, {"arrows": "to", "from": "identifier6", "label": "[\\d_]", "to": "identifier6"}, {"arrows": "to", "from": "identifier6", "label": "[^\\d_]", "to": "Dead\nState19"}, {"arrows": "to", "from": "im", "label": "[^\\d_]", "to": "Dead\nState19"}, {"arrows": "to", "from": "imp", "label": "[^\\d_]", "to": "Dead\nState19"}, {"arrows": "to", "from": "impl", "label": "[^\\d_]", "to": "Dead\nState19"}, {"arrows": "to", "from": "impli", "label": "[^\\d_]", "to": "Dead\nState19"}, {"arrows": "to", "from": "implic", "label": "[^\\d_]", "to": "Dead\nState19"}, {"arrows": "to", "from": "implici", "label": "[^\\d_]", "to": "Dead\nState19"}, {"arrows": "to", "from": "implicit", "label": "[^\\d_]", "to": "Dead\nState19"}, {"arrows": "to", "from": "i", "label": "m\nM", "to": "im"}, {"arrows": "to", "from": "im", "label": "p\nP", "to": "imp"}, {"arrows": "to", "from": "imp", "label": "l\nL", "to": "impl"}, {"arrows": "to", "from": "impl", "label": "i\nI", "to": "impli"}, {"arrows": "to", "from": "impli", "label": "c\nC", "to": "implic"}, {"arrows": "to", "from": "implic", "label": "i\nI", "to": "implici"}, {"arrows": "to", "from": "implici", "label": "t\nT", "to": "implicit"}, {"arrows": "to", "from": "im", "label": "[a-oq-zA-OQ-Z0-9_]", "to": "identifier6"}, {"arrows": "to", "from": "imp", "label": "[a-km-zA-KM-Z0-9_]", "to": "identifier6"}, {"arrows": "to", "from": "impl", "label": "[a-hj-zA-HJ-Z0-9_]", "to": "identifier6"}, {"arrows": "to", "from": "impli", "label": "[a-bd-zA-BD-Z0-9_]", "to": "identifier6"}, {"arrows": "to", "from": "implic", "label": "[a-hj-zA-HJ-Z0-9_]", "to": "identifier6"}, {"arrows": "to", "from": "implici", "label": "[a-su-zA-SU-Z0-9_]", "to": "identifier6"}, {"arrows": "to", "from": "implicit", "label": "[\\d_]", "to": "identifier6"}, {"arrows": "to", "from": "i", "label": "n\nN", "to": "in"}, {"arrows": "to", "from": "in", "label": "t\nT", "to": "int"}, {"arrows": "to", "from": "int", "label": "e\nE", "to": "inte"}, {"arrows": "to", "from": "inte", "label": "g\nG", "to": "integ"}, {"arrows": "to", "from": "integ", "label": "e\nE", "to": "intege"}, {"arrows": "to", "from": "intege", "label": "r\nR", "to": "integer"}, {"arrows": "to", "from": "in", "label": "[a-su-zA-SU-Z0-9_]", "to": "identifier6"}, {"arrows": "to", "from": "int", "label": "[a-df-zA-DF-Z0-9_]", "to": "identifier6"}, {"arrows": "to", "from": "inte", "label": "[a-fh-zA-FH-Z0-9_]", "to": "identifier6"}, {"arrows": "to", "from": "integ", "label": "[a-df-zA-DF-Z0-9_]", "to": "identifier6"}, {"arrows": "to", "from": "intege", "label": "[a-qs-zA-QS-Z0-9_]", "to": "identifier6"}, {"arrows": "to", "from": "integer", "label": "[\\d_]", "to": "identifier6"}, {"arrows": "to", "from": "in", "label": "[^\\d_]", "to": "Dead\nState19"}, {"arrows": "to", "from": "int", "label": "[^\\d_]", "to": "Dead\nState19"}, {"arrows": "to", "from": "inte", "label": "[^\\d_]", "to": "Dead\nState19"}, {"arrows": "to", "from": "integ", "label": "[^\\d_]", "to": "Dead\nState19"}, {"arrows": "to", "from": "intege", "label": "[^\\d_]", "to": "Dead\nState19"}, {"arrows": "to", "from": "integer", "label": "[^\\d_]", "to": "Dead\nState19"}, {"arrows": "to", "from": "start", "label": "p\nP", "to": "p"}, {"arrows": "to", "from": "p", "label": "r\nR", "to": "pr"}, {"arrows": "to", "from": "pr", "label": "o\nO", "to": "pro"}, {"arrows": "to", "from": "pro", "label": "g\nG", "to": "prog"}, {"arrows": "to", "from": "prog", "label": "r\nR", "to": "progr"}, {"arrows": "to", "from": "progr", "label": "a\nA", "to": "progra"}, {"arrows": "to", "from": "progra", "label": "m\nM", "to": "program"}, {"arrows": "to", "from": "pr", "label": "i\nI", "to": "pri"}, {"arrows": "to", "from": "pri", "label": "n\nN", "to": "prin"}, {"arrows": "to", "from": "prin", "label": "t\nT", "to": "print"}, {"arrows": "to", "from": "p", "label": "a\nA", "to": "pa"}, {"arrows": "to", "from": "pa", "label": "r\nR", "to": "par"}, {"arrows": "to", "from": "par", "label": "a\nA", "to": "para"}, {"arrows": "to", "from": "para", "label": "m\nM", "to": "param"}, {"arrows": "to", "from": "param", "label": "e\nE", "to": "parame"}, {"arrows": "to", "from": "parame", "label": "t\nT", "to": "paramet"}, {"arrows": "to", "from": "paramet", "label": "e\nE", "to": "paramete"}, {"arrows": "to", "from": "paramete", "label": "r\nR", "to": "parameter"}, {"arrows": "to", "from": "p", "label": "[b-qs-zB-QS-Z0-9_]", "to": "identifier12"}, {"arrows": "to", "from": "pr", "label": "[a-hj-np-zA-HJ-NP-Z0-9_]", "to": "identifier12"}, {"arrows": "to", "from": "pro", "label": "[a-fh-zA-FH-Z0-9_]", "to": "identifier12"}, {"arrows": "to", "from": "prog", "label": "[a-qs-zA-QS-Z0-9_]", "to": "identifier12"}, {"arrows": "to", "from": "progr", "label": "[b-zB-Z0-9_]", "to": "identifier12"}, {"arrows": "to", "from": "progra", "label": "[a-ln-zA-LN-Z0-9_]", "to": "identifier12"}, {"arrows": "to", "from": "program", "label": "[\\w_]", "to": "identifier12"}, {"arrows": "to", "from": "pri", "label": "[a-mo-zA-MO-Z0-9_]", "to": "identifier12"}, {"arrows": "to", "from": "prin", "label": "[a-su-zA-SU-Z0-9_]", "to": "identifier12"}, {"arrows": "to", "from": "print", "label": "[\\w_]", "to": "identifier12"}, {"arrows": "to", "from": "pa", "label": "[a-qs-zA-QS-Z0-9_]", "to": "identifier12"}, {"arrows": "to", "from": "par", "label": "[b-zB-Z0-9_]", "to": "identifier12"}, {"arrows": "to", "from": "para", "label": "[a-ln-zA-LN-Z0-9_]", "to": "identifier12"}, {"arrows": "to", "from": "param", "label": "[a-df-zA-DF-Z0-9_]", "to": "identifier12"}, {"arrows": "to", "from": "parame", "label": "[a-su-zA-SU-Z0-9_]", "to": "identifier12"}, {"arrows": "to", "from": "paramet", "label": "[a-df-zA-DF-Z0-9_]", "to": "identifier12"}, {"arrows": "to", "from": "paramete", "label": "[a-qs-zA-QS-Z0-9_]", "to": "identifier12"}, {"arrows": "to", "from": "parameter", "label": "[\\w_]", "to": "identifier12"}, {"arrows": "to", "from": "p", "label": "[^\\w_]", "to": "Dead\nState22"}, {"arrows": "to", "from": "pr", "label": "[^\\w_]", "to": "Dead\nState22"}, {"arrows": "to", "from": "pro", "label": "[^\\w_]", "to": "Dead\nState22"}, {"arrows": "to", "from": "prog", "label": "[^\\w_]", "to": "Dead\nState22"}, {"arrows": "to", "from": "progr", "label": "[^\\w_]", "to": "Dead\nState22"}, {"arrows": "to", "from": "progra", "label": "[^\\w_]", "to": "Dead\nState22"}, {"arrows": "to", "from": "program", "label": "[^\\w_]", "to": "Dead\nState22"}, {"arrows": "to", "from": "pr", "label": "[^\\w_]", "to": "Dead\nState22"}, {"arrows": "to", "from": "pri", "label": "[^\\w_]", "to": "Dead\nState22"}, {"arrows": "to", "from": "prin", "label": "[^\\w_]", "to": "Dead\nState22"}, {"arrows": "to", "from": "print", "label": "[^\\w_]", "to": "Dead\nState22"}, {"arrows": "to", "from": "pa", "label": "[^\\w_]", "to": "Dead\nState22"}, {"arrows": "to", "from": "par", "label": "[^\\w_]", "to": "Dead\nState22"}, {"arrows": "to", "from": "para", "label": "[^\\w_]", "to": "Dead\nState22"}, {"arrows": "to", "from": "param", "label": "[^\\w_]", "to": "Dead\nState22"}, {"arrows": "to", "from": "parame", "label": "[^\\w_]", "to": "Dead\nState22"}, {"arrows": "to", "from": "paramet", "label": "[^\\w_]", "to": "Dead\nState22"}, {"arrows": "to", "from": "paramete", "label": "[^\\w_]", "to": "Dead\nState22"}, {"arrows": "to", "from": "parameter", "label": "[^\\w_]", "to": "Dead\nState22"}, {"arrows": "to", "from": "identifier12", "label": "[\\w_]", "to": "identifier12"}, {"arrows": "to", "from": "identifier12", "label": "[^\\w_]", "to": "Dead\nState22"}, {"arrows": "to", "from": "Dead\nState22", "label": "\u26ab", "to": "Dead\nState22"}, {"arrows": "to", "from": "start", "label": "n\nN", "to": "n"}, {"arrows": "to", "from": "n", "label": "o\nO", "to": "no"}, {"arrows": "to", "from": "no", "label": "n\nN", "to": "non"}, {"arrows": "to", "from": "non", "label": "e\nE", "to": "none"}, {"arrows": "to", "from": "n", "label": "[a-np-zA-NP-Z0-9_]", "to": "identifier8"}, {"arrows": "to", "from": "no", "label": "[a-mo-zA-MO-Z0-9_]", "to": "identifier8"}, {"arrows": "to", "from": "non", "label": "[a-df-zA-DF-Z0-9_]", "to": "identifier8"}, {"arrows": "to", "from": "none", "label": "[\\w_]", "to": "identifier8"}, {"arrows": "to", "from": "n", "label": "[^\\w_]", "to": "Dead\nState16"}, {"arrows": "to", "from": "no", "label": "[^\\w_]", "to": "Dead\nState16"}, {"arrows": "to", "from": "non", "label": "[^\\w_]", "to": "Dead\nState16"}, {"arrows": "to", "from": "none", "label": "[^\\w_]", "to": "Dead\nState16"}, {"arrows": "to", "from": "identifier8", "label": "[\\w_]", "to": "identifier8"}, {"arrows": "to", "from": "identifier8", "label": "[^\\w_]", "to": "Dead\nState16"}, {"arrows": "to", "from": "Dead\nState16", "label": "\u26ab", "to": "Dead\nState16"}, {"arrows": "to", "from": "start", "label": "e\nE", "to": "e"}, {"arrows": "to", "from": "e", "label": "n\nN", "to": "en"}, {"arrows": "to", "from": "en", "label": "d\nD", "to": "end"}, {"arrows": "to", "from": "e", "label": "l\nL", "to": "el"}, {"arrows": "to", "from": "el", "label": "s\nS", "to": "els"}, {"arrows": "to", "from": "els", "label": "e\nE", "to": "else"}, {"arrows": "to", "from": "e", "label": "[a-kmo-zA-KMO-Z0-9_]", "to": "identifier7"}, {"arrows": "to", "from": "en", "label": "[a-ce-zA-CE-Z0-9_]", "to": "identifier7"}, {"arrows": "to", "from": "end", "label": "[\\w_]", "to": "identifier7"}, {"arrows": "to", "from": "el", "label": "[a-rt-zA-RT-Z0-9_]", "to": "identifier7"}, {"arrows": "to", "from": "els", "label": "[a-df-zA-DF-Z0-9_]", "to": "identifier7"}, {"arrows": "to", "from": "else", "label": "[\\w_]", "to": "identifier7"}, {"arrows": "to", "from": "e", "label": "[^\\w_]", "to": "Dead\nState13"}, {"arrows": "to", "from": "en", "label": "[^\\w_]", "to": "Dead\nState13"}, {"arrows": "to", "from": "end", "label": "[^\\w_]", "to": "Dead\nState13"}, {"arrows": "to", "from": "el", "label": "[^\\w_]", "to": "Dead\nState13"}, {"arrows": "to", "from": "els", "label": "[^\\w_]", "to": "Dead\nState13"}, {"arrows": "to", "from": "else", "label": "[^\\w_]", "to": "Dead\nState13"}, {"arrows": "to", "from": "identifier7", "label": "[\\w_]", "to": "identifier7"}, {"arrows": "to", "from": "identifier7", "label": "[^\\w_]", "to": "Dead\nState13"}, {"arrows": "to", "from": "Dead\nState13", "label": "\u26ab", "to": "Dead\nState13"}, {"arrows": "to", "from": "start", "label": "r\nR", "to": "r"}, {"arrows": "to", "from": "r", "label": "e\nE", "to": "re"}, {"arrows": "to", "from": "re", "label": "a\\A", "to": "rea"}, {"arrows": "to", "from": "rea", "label": "d\nD", "to": "read"}, {"arrows": "to", "from": "rea", "label": "l\nL", "to": "real"}, {"arrows": "to", "from": "r", "label": "[a-df-zA-DF-Z0-9_]", "to": "identifier9"}, {"arrows": "to", "from": "re", "label": "[b-zA-B-Z0-9_]", "to": "identifier9"}, {"arrows": "to", "from": "rea", "label": "[a-ce-km-zA-CE-KM-Z0-9_]", "to": "identifier9"}, {"arrows": "to", "from": "read", "label": "[\\w_]", "to": "identifier9"}, {"arrows": "to", "from": "real", "label": "[\\w_]", "to": "identifier9"}, {"arrows": "to", "from": "r", "label": "[^eE\\w_]", "to": "Dead\nState14"}, {"arrows": "to", "from": "re", "label": "[^aA\\w_]", "to": "Dead\nState14"}, {"arrows": "to", "from": "rea", "label": "[^lL\\w_]", "to": "Dead\nState14"}, {"arrows": "to", "from": "read", "label": "[^\\w_]", "to": "Dead\nState14"}, {"arrows": "to", "from": "real", "label": "[^\\w_]", "to": "Dead\nState14"}, {"arrows": "to", "from": "identifier9", "label": "[\\w_]", "to": "identifier9"}, {"arrows": "to", "from": "identifier9", "label": "[^\\w_]", "to": "Dead\nState14"}, {"arrows": "to", "from": "Dead\nState14", "label": "\u26ab", "to": "Dead\nState14"}, {"arrows": "to", "from": "start", "label": "c\nC", "to": "c"}, {"arrows": "to", "from": "c", "label": "o\nO", "to": "co"}, {"arrows": "to", "from": "co", "label": "m\nM", "to": "com"}, {"arrows": "to", "from": "com", "label": "p\\P", "to": "comp"}, {"arrows": "to", "from": "comp", "label": "l\nL", "to": "compl"}, {"arrows": "to", "from": "compl", "label": "e\nE", "to": "comple"}, {"arrows": "to", "from": "comple", "label": "x\\X", "to": "complex"}, {"arrows": "to", "from": "c", "label": "h\nH", "to": "ch"}, {"arrows": "to", "from": "ch", "label": "a\nA", "to": "cha"}, {"arrows": "to", "from": "cha", "label": "r\\R", "to": "char"}, {"arrows": "to", "from": "char", "label": "a\nA", "to": "chara"}, {"arrows": "to", "from": "chara", "label": "c\nC", "to": "charac"}, {"arrows": "to", "from": "charac", "label": "t\nT", "to": "charact"}, {"arrows": "to", "from": "charact", "label": "e\nE", "to": "characte"}, {"arrows": "to", "from": "characte", "label": "r\nR", "to": "character"}, {"arrows": "to", "from": "c", "label": "[^hHoO\\w_]", "to": "Dead\nState11"}, {"arrows": "to", "from": "ch", "label": "[^aA\\w_]", "to": "Dead\nState11"}, {"arrows": "to", "from": "cha", "label": "[^rR\\w_]", "to": "Dead\nState11"}, {"arrows": "to", "from": "char", "label": "[^aA\\w_]", "to": "Dead\nState11"}, {"arrows": "to", "from": "chara", "label": "[^cC\\w_]", "to": "Dead\nState11"}, {"arrows": "to", "from": "charac", "label": "[^tT\\w_]", "to": "Dead\nState11"}, {"arrows": "to", "from": "charact", "label": "[^eE\\w_]", "to": "Dead\nState11"}, {"arrows": "to", "from": "characte", "label": "[^rR\\w_]", "to": "Dead\nState11"}, {"arrows": "to", "from": "character", "label": "[\\w_]", "to": "Dead\nState11"}, {"arrows": "to", "from": "co", "label": "[^mM\\w_]", "to": "Dead\nState11"}, {"arrows": "to", "from": "com", "label": "[^pP\\w_]", "to": "Dead\nState11"}, {"arrows": "to", "from": "comp", "label": "[^lL\\w_]", "to": "Dead\nState11"}, {"arrows": "to", "from": "compl", "label": "[^eE\\w_]", "to": "Dead\nState11"}, {"arrows": "to", "from": "comple", "label": "[^xX\\w_]", "to": "Dead\nState11"}, {"arrows": "to", "from": "complex", "label": "[^\\w_]", "to": "Dead\nState11"}, {"arrows": "to", "from": "c", "label": "[a-gi-np-zA-GI-NP-Z0-9_]", "to": "identifier10"}, {"arrows": "to", "from": "ch", "label": "[b-zA-B-Z0-9_]", "to": "identifier10"}, {"arrows": "to", "from": "cha", "label": "[a-qs-zA-QS-Z0-9_]", "to": "identifier10"}, {"arrows": "to", "from": "char", "label": "[b-zA-B-Z0-9_]", "to": "identifier10"}, {"arrows": "to", "from": "chara", "label": "[a-bd-zA-BD-Z0-9_]", "to": "identifier10"}, {"arrows": "to", "from": "charac", "label": "[a-su-zA-SU-Z0-9_]", "to": "identifier10"}, {"arrows": "to", "from": "charact", "label": "[a-df-zA-DF-Z0-9_]", "to": "identifier10"}, {"arrows": "to", "from": "characte", "label": "[a-qs-zA-QS-Z0-9_]", "to": "identifier10"}, {"arrows": "to", "from": "character", "label": "[\\w_]", "to": "identifier10"}, {"arrows": "to", "from": "co", "label": "[a-ln-zA-LN-Z0-9_]", "to": "identifier10"}, {"arrows": "to", "from": "com", "label": "[a-oq-zA-OQ-Z0-9_]", "to": "identifier10"}, {"arrows": "to", "from": "comp", "label": "[a-km-zA-KM-Z0-9_]", "to": "identifier10"}, {"arrows": "to", "from": "compl", "label": "[a-df-zA-DF-Z0-9_]", "to": "identifier10"}, {"arrows": "to", "from": "comple", "label": "[a-wy-zA-WY-Z0-9_]", "to": "identifier10"}, {"arrows": "to", "from": "complex", "label": "[\\w_]", "to": "identifier10"}, {"arrows": "to", "from": "identifier10", "label": "[\\w_]", "to": "identifier10"}, {"arrows": "to", "from": "identifier10", "label": "[^\\w_]", "to": "Dead\nState11"}, {"arrows": "to", "from": "Dead\nState11", "label": "\u26ab", "to": "Dead\nState11"}, {"arrows": "to", "from": "start", "label": "l\nL", "to": "l"}, {"arrows": "to", "from": "l", "label": "o\nO", "to": "lo"}, {"arrows": "to", "from": "lo", "label": "g\nG", "to": "log"}, {"arrows": "to", "from": "log", "label": "i\\I", "to": "logi"}, {"arrows": "to", "from": "logi", "label": "c\nC", "to": "logic"}, {"arrows": "to", "from": "logic", "label": "a\nA", "to": "logica"}, {"arrows": "to", "from": "logica", "label": "l\nL", "to": "logical"}, {"arrows": "to", "from": "l", "label": "[a-np-zA-NP-Z0-9_]", "to": "identifier4"}, {"arrows": "to", "from": "lo", "label": "[a-fh-zA-FH-Z0-9_]", "to": "identifier4"}, {"arrows": "to", "from": "log", "label": "[a-hj-zA-HJ-Z0-9_]", "to": "identifier4"}, {"arrows": "to", "from": "logi", "label": "[a-bd-zA-BD-Z0-9_]", "to": "identifier4"}, {"arrows": "to", "from": "logic", "label": "[b-zB-Z0-9_]", "to": "identifier4"}, {"arrows": "to", "from": "logica", "label": "[a-km-zA-KM-Z0-9_]", "to": "identifier4"}, {"arrows": "to", "from": "logical", "label": "[\\w_]", "to": "identifier4"}, {"arrows": "to", "from": "identifier4", "label": "[^\\w_]", "to": "Dead\nState10"}, {"arrows": "to", "from": "identifier4", "label": "[\\w_]", "to": "identifier4"}, {"arrows": "to", "from": "l", "label": "[^oO\\w_]", "to": "Dead\nState10"}, {"arrows": "to", "from": "lo", "label": "[^gG\\w_]", "to": "Dead\nState10"}, {"arrows": "to", "from": "log", "label": "[^iI\\w_]", "to": "Dead\nState10"}, {"arrows": "to", "from": "logi", "label": "[^cC\\w_]", "to": "Dead\nState10"}, {"arrows": "to", "from": "logic", "label": "[^aA\\w_]", "to": "Dead\nState10"}, {"arrows": "to", "from": "logica", "label": "[^lL\\w_]", "to": "Dead\nState10"}, {"arrows": "to", "from": "logical", "label": "[\\w_]", "to": "Dead\nState10"}, {"arrows": "to", "from": "Dead\nState10", "label": "\u26ab", "to": "Dead\nState10"}, {"arrows": "to", "from": "start", "label": "t\nT", "to": "t"}, {"arrows": "to", "from": "t", "label": "h\nH", "to": "th"}, {"arrows": "to", "from": "th", "label": "e\nE", "to": "the"}, {"arrows": "to", "from": "the", "label": "n\nN", "to": "then"}, {"arrows": "to", "from": "t", "label": "[a-gi-zA-GI-Z0-9_]", "to": "identifier3"}, {"arrows": "to", "from": "th", "label": "[a-df-zA-DF-Z0-9_]", "to": "identifier3"}, {"arrows": "to", "from": "the", "label": "[a-mo-zA-MO-Z0-9_]", "to": "identifier3"}, {"arrows": "to", "from": "then", "label": "[\\w_]", "to": "identifier3"}, {"arrows": "to", "from": "identifier3", "label": "[^\\w_]", "to": "Dead\nState9"}, {"arrows": "to", "from": "identifier3", "label": "[\\w_]", "to": "identifier3"}, {"arrows": "to", "from": "t", "label": "[^hH\\w_]", "to": "Dead\nState9"}, {"arrows": "to", "from": "th", "label": "[^eE\\w_]", "to": "Dead\nState9"}, {"arrows": "to", "from": "the", "label": "[^nN\\w_]", "to": "Dead\nState9"}, {"arrows": "to", "from": "then", "label": "[^\\w_]", "to": "Dead\nState9"}, {"arrows": "to", "from": "Dead\nState9", "label": "\u26ab", "to": "Dead\nState9"}, {"arrows": "to", "from": "start", "label": "d\nD", "to": "d"}, {"arrows": "to", "from": "d", "label": "o\nO", "to": "do"}, {"arrows": "to", "from": "d", "label": "[a-np-zA-NP-Z0-9_]", "to": "identifier2"}, {"arrows": "to", "from": "do", "label": "[\\w_]", "to": "identifier2"}, {"arrows": "to", "from": "identifier2", "label": "[\\w_]", "to": "identifier2"}, {"arrows": "to", "from": "identifier2", "label": "[^\\w_]", "to": "Dead\nState8"}, {"arrows": "to", "from": "d", "label": "[^oO\\w_]", "to": "Dead\nState8"}, {"arrows": "to", "from": "do", "label": "[^\\w_]", "to": "Dead\nState8"}, {"arrows": "to", "from": "Dead\nState8", "label": "\u26ab", "to": "Dead\nState8"}, {"arrows": "to", "from": "start", "label": "v\nV", "to": "v"}, {"arrows": "to", "from": "v", "label": "a\nA", "to": "va"}, {"arrows": "to", "from": "va", "label": "r\nR", "to": "var"}, {"arrows": "to", "from": "v", "label": "[b-zB-Z0-9_]", "to": "identifier5"}, {"arrows": "to", "from": "va", "label": "[a-qs-zA-QS-Z0-9_]", "to": "identifier5"}, {"arrows": "to", "from": "var", "label": "[\\w_]", "to": "identifier5"}, {"arrows": "to", "from": "identifier5", "label": "[\\w_]", "to": "identifier5"}, {"arrows": "to", "from": "identifier5", "label": "[^\\w_]", "to": "Dead\nState7"}, {"arrows": "to", "from": "v", "label": "[^aA\\w_]", "to": "Dead\nState7"}, {"arrows": "to", "from": "va", "label": "[^rR\\w_]", "to": "Dead\nState7"}, {"arrows": "to", "from": "var", "label": "[^\\w_]", "to": "Dead\nState7"}, {"arrows": "to", "from": "Dead\nState7", "label": "\u26ab", "to": "Dead\nState7"}, {"arrows": "to", "from": "start", "label": "=", "to": "="}, {"arrows": "to", "from": "=", "label": "=", "to": "=="}, {"arrows": "to", "from": "=", "label": "[^=]", "to": "Dead\nState6"}, {"arrows": "to", "from": "==", "label": "\u26ab", "to": "Dead\nState6"}, {"arrows": "to", "from": "Dead\nState6", "label": "\u26ab", "to": "Dead\nState6"}, {"arrows": "to", "from": "start", "label": "/", "to": "/"}, {"arrows": "to", "from": "/", "label": "=", "to": "/="}, {"arrows": "to", "from": "/", "label": "[^=]", "to": "Dead\nState5"}, {"arrows": "to", "from": "/=", "label": "\u26ab", "to": "Dead\nState5"}, {"arrows": "to", "from": "Dead\nState5", "label": "\u26ab", "to": "Dead\nState5"}, {"arrows": "to", "from": "start", "label": "\u003e\n\u003c", "to": "\u003e\n\u003c"}, {"arrows": "to", "from": "\u003e\n\u003c", "label": "=", "to": "\u003e=\n\u003c="}, {"arrows": "to", "from": "\u003e\n\u003c", "label": "[^=]", "to": "Dead\nState4"}, {"arrows": "to", "from": "\u003e=\n\u003c=", "label": "\u26ab", "to": "Dead\nState4"}, {"arrows": "to", "from": "Dead\nState4", "label": "\u26ab", "to": "Dead\nState4"}, {"arrows": "to", "from": "start", "label": "*\t,\n(\t)", "to": "*\t,\n(\t)"}, {"arrows": "to", "from": "*\t,\n(\t)", "label": "\u26ab", "to": "Dead\nState12"}, {"arrows": "to", "from": "Dead\nState12", "label": "\u26ab", "to": "Dead\nState12"}, {"arrows": "to", "from": "start", "label": ":", "to": ":"}, {"arrows": "to", "from": ":", "label": "::", "to": "::"}, {"arrows": "to", "from": ":", "label": "[^:]", "to": "Dead\nState3"}, {"arrows": "to", "from": "::", "label": "\u26ab", "to": "Dead\nState3"}, {"arrows": "to", "from": "Dead\nState3", "label": "\u26ab", "to": "Dead\nState3"}, {"arrows": "to", "from": "start", "label": "[^\\w!.\"\u0027+-=\u003e\u003c/*,:()]", "to": "Dead\nState18"}, {"arrows": "to", "from": "Dead\nState18", "label": "\u26ab", "to": "Dead\nState18"}, {"arrows": "to", "from": "Int\nValue", "label": ".", "to": "Real\nValue"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "repulsion": {
+            "centralGravity": 0.2,
+            "damping": 0.09,
+            "nodeDistance": 300,
+            "springConstant": 0.05,
+            "springLength": 10
+        },
+        "solver": "repulsion",
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+                      network.on("stabilizationProgress", function(params) {
+                          document.getElementById('loadingBar').removeAttribute("style");
+                          var maxWidth = 496;
+                          var minWidth = 20;
+                          var widthFactor = params.iterations/params.total;
+                          var width = Math.max(minWidth,maxWidth * widthFactor);
+                          document.getElementById('bar').style.width = width + 'px';
+                          document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+                      });
+                      network.once("stabilizationIterationsDone", function() {
+                          document.getElementById('text').innerHTML = '100%';
+                          document.getElementById('bar').style.width = '496px';
+                          document.getElementById('loadingBar').style.opacity = 0;
+                          // really clean the dom element
+                          setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+                      });
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
