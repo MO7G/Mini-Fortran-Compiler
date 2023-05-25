@@ -65,6 +65,4 @@ Pull requests are welcome. For major changes, please open an issue first
 to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
-<div align="center">
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Fortran_logo.svg/640px-Fortran_logo.svg.png" alt="FORTRAN mini combiler" width="40" height="40"/>
-</div>
+
