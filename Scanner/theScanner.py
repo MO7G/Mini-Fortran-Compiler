@@ -506,7 +506,18 @@ def fillVideos():
         f.write("my_array = " + repr(videos))
     print(videos)
 
+def restEverything():
+    del Tokens[:]
+    del errors[:]
+    del lexems[:]
+    del videos[:]
+    del rows[:]
+    del errorRowsInScanner[:]
+    global COUNTER;
+    COUNTER=1
+    #del NumberOfComments = 0;
 def Scan(x1):
+
     find_token(x1)
     df = pd.DataFrame.from_records([t.to_dict() for t in Tokens])
     rd(Tokens)
@@ -522,11 +533,5 @@ def Scan(x1):
     dTDaPT2 = pt.Table(dTDa2, dataframe=df1, showtoolbar=True, showstatusbar=True)
     dTDaPT2.show()
 
-    for string,index in zip(Tokens,rows):
-       print(string.lex , "  " , index)
-
     fillVideos()
-    del Tokens[:]
-    del errors[:]
-    del lexems[:]
-    del videos[:]
+    restEverything()

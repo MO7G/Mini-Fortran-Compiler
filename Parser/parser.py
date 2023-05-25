@@ -262,22 +262,10 @@ def Statement(j):
             int_val2_dict = Match(S.Token_type.IntegerVal, coma_dict["index"])
             Children.append(int_val2_dict["node"])
 
-            flag = 0;
-            if Tokens[j].token_type == S.Token_type.Openb:
-                Step_dict = Step(int_val2_dict["index"]);
-                Children.append(Step_dict["node"])
-                flag = 1
-            else:
-                Epsilon_dict = createEpsilon(int_val2_dict["index"]);
-                Children.append(Epsilon_dict["node"]);
-                flag = 2;
+            Step_dict = Step(int_val2_dict["index"]);
+            Children.append(Step_dict["node"])
 
-            if flag == 1:
-                Statements_dict = Statements(Step_dict["index"])
-            elif flag == 2:
-                Statements_dict = Statements(Epsilon_dict["index"])
-
-
+            Statements_dict = Statements(Step_dict["index"])
             Children.append(Statements_dict["node"])
 
             end_dict = Match(S.Token_type.End,Statements_dict["index"])
@@ -396,12 +384,10 @@ def ConstSec(j):
         ConstantContinue_dict = ConstantContinue(Assignment_st_dict["index"])
         Children.append(ConstantContinue_dict["index"])
 
-        newLine_dict = Match(S.Token_type.NewLine,ConstantContinue_dict["index"])
-        Children.append(newLine_dict["node"])
 
         node = Tree("ConstSec", Children)
         leafroot["node"] = node
-        leafroot["index"] = newLine_dict["index"]
+        leafroot["index"] = ConstantContinue_dict["index"]
         return leafroot
     else:
         node = Tree("Epsilon", Children)
@@ -707,30 +693,30 @@ def PrintList(j):
     return leafroot
 
 def PrintListDash(j):
-    Chidlren = []
+    Children = []
     leafroot = dict()
     if j >= len(Tokens):
-        node = Tree("error", Children)
+        node = Tree("error",Children )
         leafroot["node"] = node
         leafroot["index"] = j;
         return leafroot
     if Tokens[j].token_type == S.Token_type.Coma:
         coma_dict = Match(S.Token_type.Coma , j);
-        Chidlren.append(coma_dict["node"])
+        Children.append(coma_dict["node"])
 
         PrintItem_dict = PrintItem(coma_dict["index"])
-        Chidlren.append(PrintItem_dict["node"])
+        Children.append(PrintItem_dict["node"])
 
         PrintListDash_dict = PrintListDash(PrintItem_dict["index"])
-        Chidlren.append(PrintListDash_dict["node"])
+        Children.append(PrintListDash_dict["node"])
 
-        node = Tree("PrintListDash", Chidlren)
+        node = Tree("PrintListDash", Children)
         leafroot["node"] = node
         leafroot["index"] = PrintListDash_dict["index"];
         return leafroot
 
     else:
-        node = Tree("Epsilon", Chidlren)
+        node = Tree("Epsilon", Children)
         leafroot["node"] = node
         leafroot["index"] = j;
         return leafroot
@@ -813,19 +799,19 @@ def Step(j):
         leafroot["node"] = node
         leafroot["index"] = j;
         return leafroot
-    if Tokens[j].token_type == S.Token_type.Openb:
-        openB_dict = Match(S.Token_type.Openb , j);
-        Children.append(openB_dict["node"])
+    if Tokens[j].token_type == S.Token_type.OpenSquBrack:
+        OpenSquBrack_dict = Match(S.Token_type.OpenSquBrack , j);
+        Children.append(OpenSquBrack_dict["node"])
 
-        int_val_dict = match(S.Token_type.IntegerVal , openB_dict["index"])
+        int_val_dict = Match(S.Token_type.IntegerVal , OpenSquBrack_dict["index"])
         Children.append(int_val_dict["node"])
 
-        closeB_dict = Match((S.Token_type.Closedb,int_val_dict["index"]))
-        Children.append(closeB_dict["node"])
+        CloseSquBrack_dict = Match(S.Token_type.ClosedSquBrack,int_val_dict["index"])
+        Children.append(CloseSquBrack_dict["node"])
 
         node = Tree("Step", Children)
         leafroot["node"] = node
-        leafroot["index"] = closeB_dict["index"]
+        leafroot["index"] = CloseSquBrack_dict["index"]
         return leafroot
 
     else:
@@ -1304,10 +1290,6 @@ def Match(a, j):
         else:
             output["node"] = ["error"]
             output["index"] = j
-            print("error at line ",S.rows[j] , "expected here ",a.name)
-
-            # Check if the enum instance is in the Operators dictionary
-            print("temp is here " ,a)
             if a in S.Operators.values():
                 operator = next(key for key, value in S.Operators.items() if value == a)
                 #  errors.append(f'error at line {S.rows[j]} expected here {a.name} after the {Tokens[j-1].lex}')
@@ -1353,6 +1335,7 @@ def Scan(text):
     df = pd.DataFrame.from_records([t.to_tokens() for t in errors])
     dTDa1 = tk.Toplevel()
     dTDa1.title('Token Stream')
+    dTDa1.geometry("800x600")  # Set the desired width and height
     dTDaPT = pt.Table(dTDa1, dataframe=df, showtoolbar=True, showstatusbar=True)
     dTDaPT.show()
     Node.draw()
