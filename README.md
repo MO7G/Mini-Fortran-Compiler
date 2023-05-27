@@ -1,6 +1,6 @@
 # Mini-FORTRAN-Compiler
 
-Welcome to the mini compiler !
+Welcome to our mini compiler !
 <div align="right">
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Fortran_logo.svg/640px-Fortran_logo.svg.png" alt="FORTRAN mini combiler" width="40" height="40"/>
 </div>
